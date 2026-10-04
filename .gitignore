@@ -1,0 +1,26 @@
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# Environment Variables
+.env
+
+# Data files (databases, vector store, exports)
+data/*.db
+data/chroma/
+data/exports/*.csv
+!data/exports/.gitkeep
+!data/.gitkeep
+
+# Python / Pytest cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# IDE / OS files
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
