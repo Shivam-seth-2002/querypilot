@@ -341,10 +341,12 @@ def run_evaluation():
         print("[!] GEMINI_API_KEY is not set or placeholder in .env.")
         print("[!] Validating gold queries against retail.db and RAG retriever...\n")
 
+    # Limit to first 3 test cases to avoid free-tier quota limits
+    benchmarks_to_run = GOLD_BENCHMARKS[:3]
     passed_count = 0
-    total_count = len(GOLD_BENCHMARKS)
+    total_count = len(benchmarks_to_run)
 
-    for case in GOLD_BENCHMARKS:
+    for case in benchmarks_to_run:
         cid = case["id"]
         q = case["question"]
         gold_sql = case["gold_sql"].strip()

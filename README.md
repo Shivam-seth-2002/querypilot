@@ -2,6 +2,10 @@
 
 > **QueryPilot** enables business users to query retail databases in plain English. Built with a hand-crafted **Schema-Aware RAG pipeline**, strict **defense-in-depth SQL guardrails**, and direct **Power BI Desktop** export capabilities.
 
+### 📊 Power BI Dashboard Previews
+![Sales Overview Dashboard](powerbi/sales_dashboard.png)
+![AI Usage Dashboard](powerbi/ai_dashboard.png)
+
 ---
 
 ## 🏗️ Architecture & Pipeline Flow
