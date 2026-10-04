@@ -14,31 +14,31 @@ The entire workflow from natural language question to validated analytics:
 
 ```mermaid
 flowchart TD
-    User([User Question]) --> Intent[1. Intent Classification\nRegex Pre-Filter + Gemini LLM]
+    User([User Question]) --> Intent["1. Intent Classification<br>Regex Pre-Filter + Gemini LLM"]
     
-    Intent -- Destructive/Injection --> Refusal[⛔ Polite Security Refusal]
-    Intent -- Schema Question --> SchemaDirect[📋 Database Schema Summary]
-    Intent -- Small Talk --> SmallTalk[💬 Friendly Conversational Response]
-    Intent -- DATA_QUERY --> RAG[2. Schema-Aware RAG\nChromaDB Vector Search + Keyword Fallback]
+    Intent -- Destructive/Injection --> Refusal["⛔ Polite Security Refusal"]
+    Intent -- Schema Question --> SchemaDirect["📋 Database Schema Summary"]
+    Intent -- Small Talk --> SmallTalk["💬 Friendly Conversational Response"]
+    Intent -- DATA_QUERY --> RAG["2. Schema-Aware RAG<br>ChromaDB Vector Search + Keyword Fallback"]
     
-    RAG --> FKExpansion[3. Foreign Key Graph Expansion\n1-Hop BFS Table Bridging]
-    FKExpansion --> PromptGen[4. Prompt Engineering\nDialect Rules + Few-Shot Examples + Sensitive Column Mask]
+    RAG --> FKExpansion["3. Foreign Key Graph Expansion<br>1-Hop BFS Table Bridging"]
+    FKExpansion --> PromptGen["4. Prompt Engineering<br>Dialect Rules + Few-Shot Examples + Sensitive Column Mask"]
     
-    PromptGen --> Gemini[5. Google Gemini API\nStructured JSON Mode]
-    Gemini --> Validator[6. SQL Validator Guardrail\nsqlglot AST Parse + Table Whitelist + Limit Capping]
+    PromptGen --> Gemini["5. Google Gemini API<br>Structured JSON Mode"]
+    Gemini --> Validator["6. SQL Validator Guardrail<br>sqlglot AST Parse + Table Whitelist + Limit Capping"]
     
-    Validator -- Invalid / Violation --> SelfCorrect[7. Self-Correction Loop\nMax 2 Retry Cycles with LLM]
+    Validator -- Invalid / Violation --> SelfCorrect["7. Self-Correction Loop<br>Max 2 Retry Cycles with LLM"]
     SelfCorrect --> Validator
     
-    Validator -- Validated SELECT --> ReadOnlyDB[(8. SQLite Analytics DB\nURI mode=ro + PRAGMA query_only=ON\n5s Progress Handler Timeout)]
+    Validator -- Validated SELECT --> ReadOnlyDB[("8. SQLite Analytics DB<br>URI mode=ro + PRAGMA query_only=ON<br>5s Progress Handler Timeout")]
     
     ReadOnlyDB -- Execution Error --> SelfCorrect
-    ReadOnlyDB -- Result DataFrame --> Insight[9. Insight Generator\nNatural Language Business Summary]
+    ReadOnlyDB -- Result DataFrame --> Insight["9. Insight Generator<br>Natural Language Business Summary"]
     
-    Insight --> UI[10. Streamlit Chat UI\nDataframe + Auto Charts + Technical Details]
-    Insight --> Logger[(11. Separate Log DB\ndata/app_log.db)]
+    Insight --> UI["10. Streamlit Chat UI<br>Dataframe + Auto Charts + Technical Details"]
+    Insight --> Logger[("11. Separate Log DB<br>data/app_log.db")]
     
-    UI --> PowerBI[12. Power BI Export\ndata/exports/*.csv]
+    UI --> PowerBI["12. Power BI Export<br>data/exports/*.csv"]
 ```
 
 ---
