@@ -121,7 +121,7 @@ class QueryPilotOrchestrator:
             res = QueryResult(
                 question=question,
                 intent=intent_res.intent.value,
-                insight=f"⛔ Refused: {clarification}",
+                insight=f"Refused: {clarification}",
                 explanation=clarification,
                 success=False,
                 error="Prohibited write or injection attempt",
