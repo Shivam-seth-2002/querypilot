@@ -9,6 +9,39 @@ from typing import Generator, Optional
 from querypilot.config import settings
 
 
+class TimedCursor(sqlite3.Cursor):
+    """Cursor that resets query start time on each statement execution."""
+    def execute(self, *args, **kwargs):
+        if hasattr(self.connection, "_query_start"):
+            self.connection._query_start = time.time()
+        return super().execute(*args, **kwargs)
+
+    def executemany(self, *args, **kwargs):
+        if hasattr(self.connection, "_query_start"):
+            self.connection._query_start = time.time()
+        return super().executemany(*args, **kwargs)
+
+    def executescript(self, *args, **kwargs):
+        if hasattr(self.connection, "_query_start"):
+            self.connection._query_start = time.time()
+        return super().executescript(*args, **kwargs)
+
+
+class TimedConnection(sqlite3.Connection):
+    """Connection that tracks per-query execution timeouts."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._query_start = time.time()
+        self._timeout = settings.query_timeout_seconds
+
+    def cursor(self, factory=TimedCursor):
+        return super().cursor(factory=factory)
+
+    def execute(self, *args, **kwargs):
+        self._query_start = time.time()
+        return super().execute(*args, **kwargs)
+
+
 def get_readonly_connection(
     db_path: Optional[str] = None,
     timeout_seconds: Optional[int] = None,
@@ -28,16 +61,15 @@ def get_readonly_connection(
     posix_path = target_path.as_posix()
     uri = f"file:{posix_path}?mode=ro"
 
-    conn = sqlite3.connect(uri, uri=True, check_same_thread=False)
+    conn = sqlite3.connect(uri, uri=True, check_same_thread=False, factory=TimedConnection)
     conn.execute("PRAGMA query_only = ON;")
 
     # Progress handler for query timeout
     timeout = timeout_seconds if timeout_seconds is not None else settings.query_timeout_seconds
+    conn._timeout = timeout
     if timeout and timeout > 0:
-        start_time = time.time()
-
         def timeout_handler() -> int:
-            if time.time() - start_time > timeout:
+            if time.time() - conn._query_start > conn._timeout:
                 return 1  # Non-zero return aborts query with OperationalError: interrupted
             return 0
 
